@@ -1,0 +1,203 @@
+/* Global Reset and Basic Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212; /* Dark background */
+    color: #e0e0e0; /* Light text */
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#Main {
+    background-color: #1e1e1e; /* Slightly lighter dark background */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    max-width: 500px;
+    width: 100%;
+}
+
+/* Title */
+h1#Title {
+    color: #fa3a6c; /* Main reddish pink */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Access Port Section */
+#AccessPort {
+    text-align: left; /* Align text to the left */
+    margin-bottom: 20px;
+}
+
+label {
+    color: #fa3a6c; /* Reddish pink for labels */
+    font-size: 1rem;
+    display: block; /* Ensure labels are block elements for spacing */
+    margin-bottom: 5px; /* Space below label */
+}
+
+input[type="text"], input[type="tel"] {
+    padding: 10px;
+    margin: 0 0 10px; /* Consistent margin below inputs */
+    width: 100%; /* Adjusted for padding */
+    border: none;
+    border-radius: 5px;
+    background-color: #2a2a2a;
+    color: #e0e0e0; /* Text color */
+}
+
+/* Error message styling */
+.error-message {
+    color: #ff4d4d; /* Bright red for error messages */
+    font-size: 0.9rem;
+    margin: 5px 0 10px; /* Top and bottom margins */
+}
+
+/* Connect Button */
+input.Button {
+    padding: 10px 20px;
+    background-color: #fa3a6c; /* Main reddish pink */
+    color: #e0e0e0; /* Button text color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Full width for the button */
+    margin-bottom: 10px; /* Space below button */
+}
+
+input.Button:hover {
+    background-color: #d02858; /* Darker shade on hover */
+}
+
+/* Room ID */
+h2#RoomID {
+    text-align: center;
+    color: #cfcfcf;
+    margin-bottom: 20px;
+}
+
+/* Chat Section Adjustments */
+#Chat {
+    background-color: #252525; /* Darker chat box background */
+    padding: 20px;
+    border-radius: 10px;
+    height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Ensure messages appear from the top */
+    gap: 10px; /* Add space between messages */
+}
+
+/* Hide messages initially */
+.Message {
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #1e1e1e;
+    word-wrap: break-word;
+    color: #e0e0e0; /* Ensure text is visible on dark background */
+    font-size: 1rem;
+    display: none; /* Hide all messages by default */
+}
+
+/* Message will appear when content is added via JavaScript */
+.Message.active {
+    display: block; /* Show message when it is activated */
+}
+
+#MessageLabel {
+    color: #fa3a6c; /* Reddish pink for message label */
+    margin-top: 10px; /* Space below label */
+}
+
+/* Input for messages */
+#ComposedMessage {
+    padding: 12px; /* Increase padding for larger input */
+    width: calc(100% - 20px); /* Adjusted to account for padding */
+    border-radius: 5px;
+    border: none;
+    background-color: #2a2a2a;
+    color: #e0e0e0; /* Light text */
+    margin-bottom: 10px; /* Space below the input */
+}
+
+/* Custom Styles for Message Blocks */
+.message-block {
+    position: relative; /* Required for absolute positioning of timestamp */
+    padding: 10px; /* Add padding around message block */
+    border-radius: 5px;
+    word-wrap: break-word; /* Prevent overflow of text */
+}
+
+/* Sender Message Styles */
+.sender-message {
+    background-color: #fa3a6c; /* Reddish pink background for user's messages */
+    color: #e0e0e0; /* Light text */
+}
+
+/* Receiver Message Styles */
+.receiver-message {
+    background-color: #2a2a2a; /* Darker background for others' messages */
+    color: #e0e0e0; /* Light text */
+}
+
+/* Timestamp Styles */
+.timestamp {
+    font-size: 0.8rem; /* Smaller font for the timestamp */
+    color: #cfcfcf; /* Timestamp color */
+    display: block; /* Makes it take up the full width and adds space below */
+    margin-top: 50px; /* Small gap between message and timestamp */
+    opacity: 0.7; /* Slightly transparent for visual effect */
+}
+
+/* Style for the uploaded images */
+.message-block img {
+    max-width: 100%; /* Ensure image fits within the message block */
+    border-radius: 5px;
+    border: 2px solid #fa3a6c; /* Border around images */
+    margin-top: 5px; /* Add some space between the message and the image */
+}
+
+/* Ensure images are responsive */
+@media (max-width: 768px) {
+    .message-block img {
+        max-width: 100%; /* Adjust image to fit within smaller screens */
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #Main {
+        padding: 15px;
+        max-width: 90%;
+    }
+
+    input[type="text"], input.Button, #ComposedMessage {
+        width: 100%; /* Full width for inputs and buttons */
+    }
+}
+
+@media (max-width: 480px) {
+    h1#Title {
+        font-size: 1.8rem;
+    }
+
+    input[type="text"], input.Button, #ComposedMessage {
+        width: 100%; /* Full width for inputs and buttons */
+    }
+
+    #Chat {
+        height: 250px; /* Adjust chat height for smaller screens */
+    }
+}
