@@ -14,6 +14,8 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    margin: 2% 0px;
+    overflow: hidden;
 }
 
 #Main {
@@ -36,6 +38,12 @@ h1#Title {
 #AccessPort {
     text-align: left; /* Align text to the left */
     margin-bottom: 20px;
+    display: block;
+}
+
+/* Hide chat section by default */
+#ChatSection {
+    display: none;
 }
 
 label {
@@ -79,57 +87,48 @@ input.Button:hover {
     background-color: #d02858; /* Darker shade on hover */
 }
 
-/* Room ID */
-h2#RoomID {
-    text-align: center;
-    color: #cfcfcf;
-    margin-bottom: 20px;
+/* Exit Button - Compact */
+#ExitButton {
+    padding: 2px 8px; /* Smaller padding for a more compact button */
+    background-color: #fa3a6c; /* Same main reddish pink */
+    color: #e0e0e0; /* Light text */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.8rem; /* Slightly smaller font size */
+    margin-left: 10px; /* Space between Room ID text and exit button */
+    margin-bottom:20px;
+    display: inline-block; /* Align it inline with Room ID text */
+    vertical-align: middle; /* Align button vertically in the middle */
+    width: auto; /* Set width to auto to avoid stretching */
 }
 
-/* Chat Section Adjustments */
+#ExitButton:hover {
+    background-color: #d02858; /* Darker shade on hover */
+}
+
+/* Room ID */
+h2#RoomID {
+    color: #cfcfcf;
+    margin-bottom: 20px;
+    display: inline-block; /* Make Room ID and Exit button appear inline */
+    vertical-align: middle; /* Align Room ID vertically in the middle */
+}
+
+/* Chat Section */
 #Chat {
     background-color: #252525; /* Darker chat box background */
     padding: 20px;
     border-radius: 10px;
-    height: 300px;
-    overflow-y: auto;
+    height: calc(100vh - 420px); /* Adjust this value based on other elements' heights */
+    overflow-y: scroll; /* Enable vertical scrolling for the chat */
+    -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* Ensure messages appear from the top */
     gap: 10px; /* Add space between messages */
-}
-
-/* Hide messages initially */
-.Message {
-    padding: 10px;
-    border-radius: 5px;
-    background-color: #1e1e1e;
-    word-wrap: break-word;
-    color: #e0e0e0; /* Ensure text is visible on dark background */
-    font-size: 1rem;
-    display: none; /* Hide all messages by default */
-}
-
-/* Message will appear when content is added via JavaScript */
-.Message.active {
-    display: block; /* Show message when it is activated */
-}
-
-#MessageLabel {
-    color: #fa3a6c; /* Reddish pink for message label */
-    margin-top: 10px; /* Space below label */
-}
-
-/* Input for messages */
-#ComposedMessage {
-    padding: 12px; /* Increase padding for larger input */
-    width: calc(100% - 20px); /* Adjusted to account for padding */
-    border-radius: 5px;
-    border: none;
-    background-color: #2a2a2a;
-    color: #e0e0e0; /* Light text */
-    margin-bottom: 10px; /* Space below the input */
 }
 
 /* Custom Styles for Message Blocks */
@@ -152,21 +151,45 @@ h2#RoomID {
     color: #e0e0e0; /* Light text */
 }
 
+/* Adjustments to ensure sender name appears above messages */
+.sender {
+    font-weight: bold; /* Bold for sender name */
+    color: #fa3a6c; /* Color for sender name */
+}
+
 /* Timestamp Styles */
 .timestamp {
     font-size: 0.8rem; /* Smaller font for the timestamp */
     color: #cfcfcf; /* Timestamp color */
     display: block; /* Makes it take up the full width and adds space below */
-    margin-top: 50px; /* Small gap between message and timestamp */
-    opacity: 0.7; /* Slightly transparent for visual effect */
 }
 
 /* Style for the uploaded images */
 .message-block img {
     max-width: 100%; /* Ensure image fits within the message block */
-    border-radius: 5px;
     border: 2px solid #fa3a6c; /* Border around images */
     margin-top: 5px; /* Add some space between the message and the image */
+    border-radius: 5px; /* Rounded corners for images */
+    cursor: pointer; /* Add pointer cursor on hover */
+}
+
+#previewContainer {
+    display: none; /* Hidden initially */
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+#imagePreview {
+    width: 20px;
+    height: 20px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+#imageName {
+    color: #fa3a6c;
 }
 
 /* Ensure images are responsive */
@@ -201,3 +224,43 @@ h2#RoomID {
         height: 250px; /* Adjust chat height for smaller screens */
     }
 }
+
+/* Styles for the input container */
+.input-container {
+    display: flex; /* Align children in a row */
+    align-items: center; /* Center items vertically */
+    margin-top: 10px; /* Space above the input section */
+    margin-bottom: 10px; /* Space below the input section to separate from the next element */
+}
+
+input#ComposedMessage {
+    flex: 1; /* Allow the message input to take the available space */
+    margin-right: 10px; /* Space between the input and the plus button */
+    height: 40px; /* Set height to match the button diameter */
+    padding: 10px; /* Ensure consistent padding */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners for input */
+    background-color: #2a2a2a; /* Background color for input */
+    color: #e0e0e0; /* Text color */
+}
+
+/* Plus Button Styles */
+.plus-button {
+    background-color: #fa3a6c; /* Reddish-pink background */
+    color: #2a2a2a; /* Dark grey color for the plus icon */
+    border: none; /* Remove default button border */
+    border-radius: 50%; /* Make the button circular */
+    font-size: 24px; /* Adjust font size for the plus icon */
+    display: flex; /* Center the icon vertically and horizontally */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    width: 40px; /* Set a fixed width */
+    height: 40px; /* Set a fixed height */
+    padding: 0; /* Remove padding for a better fit */
+    line-height: 0; /* Remove any line height affecting alignment */
+    margin-bottom: 10px; /* Reset any margin */
+}
+
+.plus-button:hover {
+    background-color: #e03e5b; /* Darker shade on hover

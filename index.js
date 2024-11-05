@@ -46,7 +46,7 @@ io.on('connection', function (socket) {
 
     // Handle sending messages
     socket.on("send", function (message) {
-        if (rooms[socket.id]) {
+        if (rooms[socket.id] && message.text.trim() !== "") { // Ensure non-empty message
             io.in(rooms[socket.id]).emit("recieve", {
                 text: message.text,
                 username: usernames[socket.id],
@@ -58,12 +58,25 @@ io.on('connection', function (socket) {
 
     // Handle sending images
     socket.on("sendImage", function (message) {
-        if (rooms[socket.id]) {
+        if (rooms[socket.id] && message.image) { // Ensure valid image data
             io.in(rooms[socket.id]).emit("recieve", {
                 image: message.image,  // Base64 image data
                 username: usernames[socket.id],
                 time: message.time,
                 type: 'image'  // Indicating this is an image message
+            });
+        }
+    });
+
+    // Handle sending both image and text
+    socket.on("sendImageText", function (message) {
+        if (rooms[socket.id] && (message.text || message.image)) { // Check for either text or image
+            io.in(rooms[socket.id]).emit("recieve", {
+                text: message.text,  // The text message, if present
+                image: message.image,  // The image, if present
+                username: usernames[socket.id],
+                time: message.time,
+                type: 'image+text' // Indicating this is a combined image and text message
             });
         }
     });
