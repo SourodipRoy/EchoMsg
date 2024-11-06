@@ -11,9 +11,11 @@ const io = socketio(httpServer);
 const gameDirectory = path.join(__dirname);
 app.use(express.static(gameDirectory));
 
-// Start the server on port 3000
-httpServer.listen(3000, () => {
-    console.log("Server is listening on port 3000");
+const PORT = process.env.PORT || 3000;
+
+// Start the server on the dynamic port or 3000
+httpServer.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`);
 });
 
 // Store room information and usernames
