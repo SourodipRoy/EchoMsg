@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",  // Add this line to define how to start the app
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
