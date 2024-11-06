@@ -9,7 +9,7 @@ var delay = true;
 var selectedImageFile = null; // Initialize selectedImageFile as null
 
 function onload() {
-    socket = io("https://echomsg.onrender.com");
+    socket = io();
     usernameInput = document.getElementById("NameInput");
     chatIDInput = document.getElementById("IDInput");
     messageInput = document.getElementById("ComposedMessage");
@@ -217,9 +217,9 @@ function Send() {
         };
 
         if (hasImage) {
-            const reader = new FileReader();
-            reader.onloadend = function () {
-                message.image = reader.result; // Base64 image
+            // Resize image before sending
+            resizeImage(selectedImageFile, 800, 800, function (resizedImage) {
+                message.image = resizedImage; // Set resized image
                 if (hasText) {
                     // Emit both image and text together
                     socket.emit("sendImageText", message); // Emit the combined message
@@ -229,14 +229,7 @@ function Send() {
                 clearSelectedImage(); // Clear selected image after sending
                 messageInput.value = ""; // Clear the message input
                 updateMessages(); // Update the messages display
-            };
-
-            // Only call readAsDataURL if selectedImageFile is valid
-            if (selectedImageFile instanceof Blob) {
-                reader.readAsDataURL(selectedImageFile); // Convert the image to Base64
-            } else {
-                console.error("selectedImageFile is not a valid Blob.");
-            }
+            });
         } else if (hasText) {
             // Send only text if no image
             socket.emit("send", message); // Emit the text message
@@ -244,6 +237,42 @@ function Send() {
             updateMessages(); // Update the messages display
         }
     }
+}
+
+function resizeImage(file, maxWidth, maxHeight, callback) {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    img.onload = function () {
+        let canvas = document.createElement('canvas');
+        let ctx = canvas.getContext('2d');
+        let width = img.width;
+        let height = img.height;
+
+        // Resize the image proportionally
+        if (width > height) {
+            if (width > maxWidth) {
+                height = height * maxWidth / width;
+                width = maxWidth;
+            }
+        } else {
+            if (height > maxHeight) {
+                width = width * maxHeight / height;
+                height = maxHeight;
+            }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert canvas to Base64 (JPEG format to reduce size)
+        callback(canvas.toDataURL('image/jpeg'));  // Send image in jpeg format to reduce size
+    };
 }
 
 function clearSelectedImage() {
