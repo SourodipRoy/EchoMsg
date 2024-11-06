@@ -2,10 +2,19 @@ const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
 const path = require("path");
+const cors = require("cors"); // Import cors
 
 const app = express();
 const httpServer = http.Server(app);
-const io = socketio(httpServer);
+const io = socketio(httpServer, {
+    cors: {
+        origin: "*", // Allow all origins, adjust this if needed for security
+        methods: ["GET", "POST"]
+    }
+});
+
+// Apply CORS middleware to Express
+app.use(cors());
 
 // Define the directory for serving static files
 const gameDirectory = path.join(__dirname, "html");
