@@ -9,7 +9,7 @@ var delay = true;
 var selectedImageFile = null; // Initialize selectedImageFile as null
 
 function onload() {
-    socket = io();
+    socket = io("https://echomsg.onrender.com");
     usernameInput = document.getElementById("NameInput");
     chatIDInput = document.getElementById("IDInput");
     messageInput = document.getElementById("ComposedMessage");
