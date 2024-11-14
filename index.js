@@ -7,111 +7,98 @@ const app = express();
 const httpServer = http.Server(app);
 const io = socketio(httpServer);
 
-// Define the directory for serving static files
 const gameDirectory = path.join(__dirname);
 app.use(express.static(gameDirectory));
 
 const PORT = process.env.PORT || 3000;
 
-// Start the server on the dynamic port or 3000
 httpServer.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
 });
 
-// Store room information and usernames
 const rooms = {};
 const usernames = {};
 
-// Handle socket connections
 io.on('connection', function (socket) {
 
-    // Handle user joining a room
     socket.on("join", function (room, username) {
         if (username !== "") {
-            socket.leaveAll(); // Leave any existing rooms
-            socket.join(room); // Join the specified room
-            rooms[socket.id] = room; // Store room info
-            usernames[socket.id] = username; // Store username
+            socket.leaveAll();
+            socket.join(room);
+            rooms[socket.id] = room;
+            usernames[socket.id] = username;
 
-            // Notify the room of the new user
             io.in(room).emit("recieve", {
                 text: `${username} has entered the chat.`,
                 username: "Server",
                 time: getCurrentTime(),
-                type: 'text' // Indicating this is a text message
+                type: 'text'
             });
 
-            // Confirm to the user they have joined the room
             socket.emit("join", room);
         }
     });
 
-    // Handle sending messages
     socket.on("send", function (message) {
-        if (rooms[socket.id] && message.text.trim() !== "") { // Ensure non-empty message
+        if (rooms[socket.id] && message.text.trim() !== "") {
             io.in(rooms[socket.id]).emit("recieve", {
                 text: message.text,
                 username: usernames[socket.id],
                 time: message.time,
-                type: 'text' // Indicating this is a text message
+                type: 'text'
             });
         }
     });
 
-    // Handle sending images
     socket.on("sendImage", function (message) {
-        if (rooms[socket.id] && message.image) { // Ensure valid image data
+        if (rooms[socket.id] && message.image) {
             io.in(rooms[socket.id]).emit("recieve", {
-                image: message.image,  // Base64 image data
+                image: message.image,
                 username: usernames[socket.id],
                 time: message.time,
-                type: 'image'  // Indicating this is an image message
+                type: 'image'
             });
         }
     });
 
-    // Handle sending both image and text
     socket.on("sendImageText", function (message) {
-        if (rooms[socket.id] && (message.text || message.image)) { // Check for either text or image
+        if (rooms[socket.id] && (message.text || message.image)) {
             io.in(rooms[socket.id]).emit("recieve", {
-                text: message.text,  // The text message, if present
-                image: message.image,  // The image, if present
+                text: message.text,
+                image: message.image,
                 username: usernames[socket.id],
                 time: message.time,
-                type: 'image+text' // Indicating this is a combined image and text message
+                type: 'image+text'
             });
         }
     });
 
-    // Handle user disconnecting
     socket.on('disconnect', function () {
         const room = rooms[socket.id];
         const username = usernames[socket.id];
         if (room && username) {
-            delete usernames[socket.id]; // Remove the username
-            delete rooms[socket.id]; // Remove the room info
+            delete usernames[socket.id];
+            delete rooms[socket.id];
 
-            // Notify others in the room that the user has left
             socket.to(room).emit("recieve", {
                 text: `${username} has left the chat.`,
                 username: "Server",
                 time: getCurrentTime(),
-                type: 'text' // Indicating this is a text message
+                type: 'text'
             });
         }
     });
 });
 
-// Function to get the current time in AM/PM format
 function getCurrentTime() {
     const now = new Date();
     let hours = now.getHours();
     let minutes = now.getMinutes();
     let ampm = hours >= 12 ? 'PM' : 'AM';
 
-    hours = hours % 12; // Convert to 12-hour format
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0' + minutes : minutes; // Add leading zero if needed
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    minutes = minutes < 10 ? '0' + minutes : minutes;
 
-    return hours + ':' + minutes + ' ' + ampm; // Return formatted time
+    return hours + ':' + minutes + ' ' + ampm;
 }

@@ -1,4 +1,3 @@
-/* Global Reset and Basic Styling */
 * {
     margin: 0;
     padding: 0;
@@ -7,8 +6,8 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #121212; /* Dark background */
-    color: #e0e0e0; /* Light text */
+    background-color: #121212;
+    color: #e0e0e0;
     line-height: 1.6;
     display: flex;
     justify-content: center;
@@ -19,7 +18,7 @@ body {
 }
 
 #Main {
-    background-color: #1e1e1e; /* Slightly lighter dark background */
+    background-color: #1e1e1e;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
@@ -27,154 +26,149 @@ body {
     width: 100%;
 }
 
-/* Title */
 h1#Title {
-    color: #fa3a6c; /* Main reddish pink */
+    color: #fa3a6c;
     text-align: center;
     margin-bottom: 20px;
 }
 
-/* Access Port Section */
 #AccessPort {
-    text-align: left; /* Align text to the left */
+    text-align: left;
     margin-bottom: 20px;
     display: block;
 }
 
-/* Hide chat section by default */
 #ChatSection {
     display: none;
 }
 
 label {
-    color: #fa3a6c; /* Reddish pink for labels */
+    color: #fa3a6c;
     font-size: 1rem;
-    display: block; /* Ensure labels are block elements for spacing */
-    margin-bottom: 5px; /* Space below label */
+    display: block;
+    margin-bottom: 5px;
 }
 
 input[type="text"], input[type="tel"] {
     padding: 10px;
-    margin: 0 0 10px; /* Consistent margin below inputs */
-    width: 100%; /* Adjusted for padding */
+    margin: 0 0 10px;
+    width: 100%;
     border: none;
     border-radius: 5px;
     background-color: #2a2a2a;
-    color: #e0e0e0; /* Text color */
+    color: #e0e0e0;
 }
 
-/* Error message styling */
 .error-message {
-    color: #ff4d4d; /* Bright red for error messages */
+    color: #ff4d4d;
     font-size: 0.9rem;
-    margin: 5px 0 10px; /* Top and bottom margins */
+    margin: 5px 0 10px;
 }
 
-/* Connect Button */
 input.Button {
     padding: 10px 20px;
-    background-color: #fa3a6c; /* Main reddish pink */
-    color: #e0e0e0; /* Button text color */
+    background-color: #fa3a6c;
+    color: #e0e0e0;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-weight: bold;
     transition: background-color 0.3s ease;
-    width: 100%; /* Full width for the button */
-    margin-bottom: 10px; /* Space below button */
+    width: 100%;
+    margin-bottom: 10px;
 }
 
 input.Button:hover {
-    background-color: #d02858; /* Darker shade on hover */
+    background-color: #d02858;
 }
 
-/* Exit Button - Compact */
 #ExitButton {
-    padding: 2px 8px; /* Smaller padding for a more compact button */
-    background-color: #fa3a6c; /* Same main reddish pink */
-    color: #e0e0e0; /* Light text */
+    padding: 2px 8px;
+    background-color: #fa3a6c;
+    color: #e0e0e0;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    font-size: 0.8rem; /* Slightly smaller font size */
-    margin-left: 10px; /* Space between Room ID text and exit button */
-    margin-bottom:20px;
-    display: inline-block; /* Align it inline with Room ID text */
-    vertical-align: middle; /* Align button vertically in the middle */
-    width: auto; /* Set width to auto to avoid stretching */
+    font-size: 0.8rem;
+    margin-left: 10px;
+    margin-bottom: 20px;
+    display: inline-block;
+    vertical-align: middle;
+    width: auto;
 }
 
 #ExitButton:hover {
-    background-color: #d02858; /* Darker shade on hover */
+    background-color: #d02858;
 }
 
-/* Room ID */
 h2#RoomID {
     color: #cfcfcf;
     margin-bottom: 20px;
-    display: inline-block; /* Make Room ID and Exit button appear inline */
-    vertical-align: middle; /* Align Room ID vertically in the middle */
+    display: inline-block;
+    vertical-align: middle;
 }
 
-/* Chat Section */
 #Chat {
-    background-color: #252525; /* Darker chat box background */
+    background-color: #252525;
     padding: 20px;
     border-radius: 10px;
-    height: calc(100vh - 420px); /* Adjust this value based on other elements' heights */
-    overflow-y: scroll; /* Enable vertical scrolling for the chat */
-    -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on iOS */
+    height: calc(100vh - 420px);
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Ensure messages appear from the top */
-    gap: 10px; /* Add space between messages */
+    justify-content: flex-start;
+    gap: 10px;
 }
 
-/* Custom Styles for Message Blocks */
 .message-block {
-    position: relative; /* Required for absolute positioning of timestamp */
-    padding: 10px; /* Add padding around message block */
+    position: relative;
+    padding: 10px;
     border-radius: 5px;
-    word-wrap: break-word; /* Prevent overflow of text */
+    word-wrap: break-word;
 }
 
-/* Sender Message Styles */
 .sender-message {
-    background-color: #fa3a6c; /* Reddish pink background for user's messages */
-    color: #e0e0e0; /* Light text */
+    background-color: #fa3a6c;
+    color: #e0e0e0;
 }
 
-/* Receiver Message Styles */
 .receiver-message {
-    background-color: #2a2a2a; /* Darker background for others' messages */
-    color: #e0e0e0; /* Light text */
+    background-color: #2a2a2a;
+    color: #e0e0e0;
 }
 
-/* Adjustments to ensure sender name appears above messages */
+.sender-message img {
+    border: 2px solid #fa3a6c;
+}
+
+.receiver-message img {
+    border: 2px solid #2a2a2a;
+}
+
 .sender {
-    font-weight: bold; /* Bold for sender name */
-    color: #fa3a6c; /* Color for sender name */
+    font-weight: bold;
+    color: #fa3a6c;
 }
 
-/* Timestamp Styles */
 .timestamp {
-    font-size: 0.8rem; /* Smaller font for the timestamp */
-    color: #cfcfcf; /* Timestamp color */
-    display: block; /* Makes it take up the full width and adds space below */
+    font-size: 0.8rem;
+    color: #e0e0e0;
+    display: block;
 }
 
-/* Style for the uploaded images */
 .message-block img {
-    max-width: 100%; /* Ensure image fits within the message block */
-    border: 2px solid #fa3a6c; /* Border around images */
-    margin-top: 5px; /* Add some space between the message and the image */
-    border-radius: 5px; /* Rounded corners for images */
-    cursor: pointer; /* Add pointer cursor on hover */
+    max-width: 100%;
+    border: 2px solid #fa3a6c;
+    margin-top: 5px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
 #previewContainer {
-    display: none; /* Hidden initially */
+    display: none;
     margin-bottom: 10px;
     display: flex;
     align-items: center;
@@ -192,14 +186,12 @@ h2#RoomID {
     color: #fa3a6c;
 }
 
-/* Ensure images are responsive */
 @media (max-width: 768px) {
     .message-block img {
-        max-width: 100%; /* Adjust image to fit within smaller screens */
+        max-width: 100%;
     }
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     #Main {
         padding: 15px;
@@ -207,7 +199,7 @@ h2#RoomID {
     }
 
     input[type="text"], input.Button, #ComposedMessage {
-        width: 100%; /* Full width for inputs and buttons */
+        width: 100%;
     }
 }
 
@@ -217,50 +209,92 @@ h2#RoomID {
     }
 
     input[type="text"], input.Button, #ComposedMessage {
-        width: 100%; /* Full width for inputs and buttons */
+        width: 100%;
     }
 
     #Chat {
-        height: 250px; /* Adjust chat height for smaller screens */
+        height: 250px;
     }
 }
 
-/* Styles for the input container */
 .input-container {
-    display: flex; /* Align children in a row */
-    align-items: center; /* Center items vertically */
-    margin-top: 10px; /* Space above the input section */
-    margin-bottom: 10px; /* Space below the input section to separate from the next element */
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 input#ComposedMessage {
-    flex: 1; /* Allow the message input to take the available space */
-    margin-right: 10px; /* Space between the input and the plus button */
-    height: 40px; /* Set height to match the button diameter */
-    padding: 10px; /* Ensure consistent padding */
-    border: none; /* Remove default border */
-    border-radius: 5px; /* Rounded corners for input */
-    background-color: #2a2a2a; /* Background color for input */
-    color: #e0e0e0; /* Text color */
+    flex: 1;
+    margin-right: 6px;
+    height: 40px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #2a2a2a;
+    color: #e0e0e0;
 }
 
-/* Plus Button Styles */
+input[type="text"]:focus, input[type="tel"]:focus, input#ComposedMessage:focus {
+    outline: 2px solid #fa3a6c;
+}
+
 .plus-button {
-    background-color: #fa3a6c; /* Reddish-pink background */
-    color: #2a2a2a; /* Dark grey color for the plus icon */
-    border: none; /* Remove default button border */
-    border-radius: 50%; /* Make the button circular */
-    font-size: 24px; /* Adjust font size for the plus icon */
-    display: flex; /* Center the icon vertically and horizontally */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    cursor: pointer; /* Change cursor to pointer on hover */
-    width: 40px; /* Set a fixed width */
-    height: 40px; /* Set a fixed height */
-    padding: 0; /* Remove padding for a better fit */
-    line-height: 0; /* Remove any line height affecting alignment */
-    margin-bottom: 10px; /* Reset any margin */
+    background-color: #fa3a6c;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin: 0 6px 10px 0;
 }
 
 .plus-button:hover {
-    background-color: #e03e5b; /* Darker shade on hover
+    background-color: #d02858;
+}
+
+#SendMessage {
+    background-color: #fa3a6c;
+    color: #e0e0e0;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    outline: none;
+    padding: 0;
+    appearance: none;
+    margin-bottom: 10px;
+}
+
+#SendMessage:hover {
+    background-color: #d02858;
+}
+
+#SendMessage:focus {
+    outline: none;
+}
+
+.server-message {
+    background-color: transparent;
+    color: #fa3a6c;
+    text-align: center;
+    font-style: italic;
+    font-weight: bold;
+    width: 100%;
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    padding: 0;
+}

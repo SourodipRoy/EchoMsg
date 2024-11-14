@@ -24,6 +24,11 @@ function onload() {
     // Hide image preview initially
     document.getElementById('imagePreview').style.display = 'none'; // Initially hidden
     document.getElementById('imageName').textContent = ''; // No file name initially
+    
+    document.getElementById('IDInput').addEventListener('input', function(event) {
+        // Replace anything that is not a digit
+        event.target.value = event.target.value.replace(/[^0-9]/g, '');
+    });
 
     socket.on("join", function (room) {
         chatRoom.innerHTML = "Room ID: " + room;
@@ -37,105 +42,93 @@ function onload() {
 
     socket.on("recieve", function (message) {
         console.log(message);
-        messages.push(message); // Allow unlimited messages
+        messages.push(message);
         dingSound.currentTime = 0;
         dingSound.play();
-        updateMessages(); // Update the display with all messages
+        updateMessages();
     });
 }
 
 function updateMessages() {
     let chat = document.getElementById("Chat");
-    chat.innerHTML = ''; // Clear chat area before adding new messages
-    messages.forEach(function (messageObj) {
-        let messageBlock = document.createElement('div');
-        messageBlock.style.position = 'relative'; // Set relative position for timestamp positioning
-        messageBlock.style.width = '65%'; // Set width to 65% of the chat area
-        messageBlock.style.margin = (messageObj.username === usernameInput.value) ? '0 0 10px auto' : '0 auto 10px 0'; // Margin for sender vs receiver
+    chat.innerHTML = '';
+    let previousUsername = null;
 
-        let sender = document.createElement('p');
+    messages.forEach(function (messageObj, index) {
+        let messageBlock = document.createElement('div');
+        messageBlock.style.position = 'relative';
+        messageBlock.style.width = '65%'; 
+        messageBlock.style.margin = (messageObj.username === usernameInput.value) ? '0 0 4px auto' : '0 auto 4px 0'; 
+
+        let isSameUserAsPrevious = (index > 0 && messages[index - 1].username === messageObj.username);
+
         let time = document.createElement('span');
 
-        // Sender info
-        sender.textContent = messageObj.username;
-        sender.style.fontWeight = 'bold';
-        sender.style.color = (messageObj.username === usernameInput.value) ? "#e0e0e0" : "#fa3a6c"; // Sender name is white for self, pink for others
-        sender.style.marginBottom = "2px"; // Space between sender name and message
-
-        // Set alignment for sender vs receiver
-        if (messageObj.username === usernameInput.value) {
-            sender.style.textAlign = 'right'; // Align sender username to the right
-            messageBlock.style.textAlign = 'right'; // Align the message block to the right for sender
-        } else {
-            sender.style.textAlign = 'left'; // Align other usernames to the left
-            messageBlock.style.textAlign = 'left'; // Align the message block to the left for others
+        if (!isSameUserAsPrevious) {
+            let sender = document.createElement('p');
+            sender.textContent = messageObj.username;
+            sender.style.fontWeight = 'bold';
+            sender.style.color = (messageObj.username === usernameInput.value) ? "#e0e0e0" : "#fa3a6c"; 
+            sender.style.marginBottom = "2px"; 
+            sender.style.textAlign = (messageObj.username === usernameInput.value) ? 'right' : 'left'; 
+            messageBlock.appendChild(sender);
         }
-
-        // Append sender name above the message block
-        messageBlock.insertBefore(sender, messageBlock.firstChild); // Insert sender before any other elements
 
         let hasImage = messageObj.image ? true : false;
         let hasText = messageObj.text ? true : false;
 
-        // Display image if present
+        
         if (hasImage) {
             let img = document.createElement('img');
             img.src = messageObj.image;
-            img.style.maxWidth = '100%'; // Set max width for the image
-            img.style.border = '3px solid #fa3a6c'; // Thick border around image
-            img.style.borderRadius = '5px'; // Apply corner radius to the image in all conditions
+            img.style.maxWidth = '100%'; 
+            img.style.border = messageObj.username === usernameInput.value ? '3px solid #fa3a6c' : '3px solid #2a2a2a';
+            img.style.borderRadius = '5px';
 
-            // Create a link for downloading the image
+            
             let link = document.createElement('a');
-            link.href = messageObj.image; // Set the link's href to the Base64 image source
-            link.download = 'image.png'; // Set a default filename for the download
+            link.href = messageObj.image; 
+            link.download = 'image.png';
 
-            // Apply specific styles for image+text condition
             if (hasText) {
-                img.style.borderBottom = '4px solid #fa3a6c'; // Keep bottom border visible
-                img.style.display = 'block'; // Ensure the image takes up its own block with no margins
-                img.style.borderTopLeftRadius = '5px'; // Rounded top left corner
-                img.style.borderTopRightRadius = '5px'; // Rounded top right corner
-                img.style.borderBottomLeftRadius = '0'; // No bottom left corner radius (to align with text block)
-                img.style.borderBottomRightRadius = '0'; // No bottom right corner radius (to align with text block)
+                img.style.border = messageObj.username === usernameInput.value ? '3px solid #fa3a6c' : '3px solid #2a2a2a';
+                img.style.display = 'block'; 
+                img.style.borderTopLeftRadius = '5px'; 
+                img.style.borderTopRightRadius = '5px'; 
+                img.style.borderBottomLeftRadius = '0'; 
+                img.style.borderBottomRightRadius = '0'; 
             } else {
-                // For image-only styling
-                img.style.borderBottom = '18px solid #fa3a6c'; // Extra thick bottom border for timestamp
-                img.style.borderRadius = '5px'; // Fully rounded for image-only messages
+                img.style.borderBottom= messageObj.username === usernameInput.value ? '20px solid #fa3a6c' : '20px solid #2a2a2a'
+                img.style.marginBottom = '-2px';
             }
 
-            // Append the image to the link and then the link to the message block
             link.appendChild(img);
             messageBlock.appendChild(link);
         }
 
-        // Display message text below the image if present
         if (hasText) {
             let message = document.createElement('p');
             message.textContent = messageObj.text;
 
-            // Check if this is a server message
             if (messageObj.username === "Server") {
-                message.style.backgroundColor = "#007BFF"; // Blue background for server messages
-                message.style.color = "#ffffff"; // White text for server messages
+                message.style.backgroundColor = "#007BFF";
+                message.style.color = "#ffffff";
             } else {
-                message.style.backgroundColor = (messageObj.username === usernameInput.value) ? "#fa3a6c" : "#2a2a2a"; // Different color for sender/receiver
+                message.style.backgroundColor = (messageObj.username === usernameInput.value) ? "#fa3a6c" : "#2a2a2a";
                 message.style.color = "#e0e0e0";
             }
 
-            message.style.padding = "10px 10px 20px 10px"; // Top, right, bottom, left padding
+            message.style.padding = "2px 10px 20px 10px";
             message.style.wordWrap = "break-word";
-            message.style.position = "relative"; // Needed for positioning the timestamp
-            message.style.textAlign = 'left'; // Left align all message texts
+            message.style.position = "relative"; 
+            message.style.textAlign = 'left';
 
-            // Apply specific styles for image+text condition
             if (hasImage) {
-                message.style.borderRadius = "0 0 5px 5px"; // Remove top corners radius, round bottom corners only
-                message.style.marginTop = '0'; // No gap between image and text
+                message.style.borderRadius = "0 0 5px 5px";
+                message.style.marginTop = '0';
             } else {
-                // Normal text-only styling
-                message.style.borderRadius = "5px"; // Fully rounded for text-only messages
-                message.style.marginTop = '5px'; // Default margin for text-only
+
+                message.style.borderRadius = "5px";
             }
 
             messageBlock.appendChild(message);
@@ -145,26 +138,24 @@ function updateMessages() {
         time.textContent = messageObj.time;
         time.style.fontSize = "0.8rem";
         time.style.color = "#cfcfcf";
-        time.style.position = "absolute"; // Positioning it absolutely
-        time.style.bottom = "5px"; // 5px from the bottom
-        time.style.right = "10px"; // 10px from the right
-
-        // Append timestamp
+        time.style.position = "absolute";
+        time.style.bottom = "4px";
+        time.style.right = "10px";
+                     
         messageBlock.appendChild(time);
-
-        // Append the message block to chat
+        
         chat.appendChild(messageBlock);
+        
+        previousUsername = messageObj.username;
     });
 }
 
 function Connect() {
-    // Clear any previous error messages
     clearErrorMessages();
 
     const username = usernameInput.value.trim();
     const chatID = chatIDInput.value.trim();
 
-    // Validation for username and chatroom ID
     let errorMessages = [];
 
     if (username === "") {
@@ -172,7 +163,6 @@ function Connect() {
         displayErrorMessages('username', "Username is required.");
     }
 
-    // Check if the Room ID is empty or not 6 digits long
     if (chatID === "") {
         errorMessages.push("Room ID is required.");
         displayErrorMessages('roomID', "Room ID is required.");
@@ -181,27 +171,43 @@ function Connect() {
         displayErrorMessages('roomID', "Room ID must be exactly 6 digits.");
     }
 
-    // If there are error messages, display them and stop the connection process
     if (errorMessages.length > 0) {
-        return; // Stop the connection process if there are errors
+        return;
     }
 
-    // Emit the join event
     socket.emit("join", chatID, username);
 
-    // Hide the access port section after connecting
-    document.getElementById("AccessPort").style.display = 'none'; // Hide the access port
+    document.getElementById("AccessPort").style.display = 'none';
 
-    // Show the exit button
-    document.getElementById("ExitButton").style.display = 'block'; // Show the exit button
+    document.getElementById("ExitButton").style.display = 'block';
+}
+
+function joinGlobalChat() {
+    const username = usernameInput.value.trim();
+
+    if (username === "") {
+        displayErrorMessages('username', "Username is required.");
+        return;
+    }
+
+    const globalRoomID = 'Global Chat';
+    socket.emit("join", globalRoomID, username);
+
+    document.getElementById("AccessPort").style.display = 'none';
+    document.getElementById("Chat").style.display = 'block';
+    document.getElementById("MessageSection").style.display = 'block';
+    document.getElementById("ExitButton").style.display = 'block';
+
+    chatRoom.innerHTML = "Global Chat";
+    chatRoom.style.display = 'block';
 }
 
 function Send() {
-    let hasText = messageInput.value.trim() !== ""; // Check if there is text in the input
-    let hasImage = selectedImageFile !== null; // Check if an image is selected
+    let hasText = messageInput.value.trim() !== ""; 
+    let hasImage = selectedImageFile !== null; 
 
     if (!hasText && !hasImage) {
-        return; // Do not send if both text and image are empty
+        return; 
     }
 
     if (delay) {
@@ -210,31 +216,28 @@ function Send() {
 
         const message = {
             username: usernameInput.value,
-            image: hasImage ? null : undefined, // Initialize with null if no image
-            text: hasText ? messageInput.value : undefined, // Initialize with null if no text
+            image: hasImage ? null : undefined, 
+            text: hasText ? messageInput.value : undefined,
             time: getCurrentTime(),
-            type: hasImage && hasText ? 'image+text' : hasImage ? 'image' : 'text' // Indicate the type as appropriate
+            type: hasImage && hasText ? 'image+text' : hasImage ? 'image' : 'text'
         };
 
         if (hasImage) {
-            // Resize image before sending
             resizeImage(selectedImageFile, 800, 800, function (resizedImage) {
-                message.image = resizedImage; // Set resized image
+                message.image = resizedImage;
                 if (hasText) {
-                    // Emit both image and text together
-                    socket.emit("sendImageText", message); // Emit the combined message
+                    socket.emit("sendImageText", message);
                 } else {
-                    socket.emit("sendImage", message); // Emit image only if no text
+                    socket.emit("sendImage", message);
                 }
-                clearSelectedImage(); // Clear selected image after sending
-                messageInput.value = ""; // Clear the message input
-                updateMessages(); // Update the messages display
+                clearSelectedImage();
+                messageInput.value = ""; 
+                updateMessages();
             });
         } else if (hasText) {
-            // Send only text if no image
-            socket.emit("send", message); // Emit the text message
-            messageInput.value = ""; // Clear the message input
-            updateMessages(); // Update the messages display
+            socket.emit("send", message);
+            messageInput.value = ""; 
+            updateMessages();
         }
     }
 }
@@ -253,7 +256,6 @@ function resizeImage(file, maxWidth, maxHeight, callback) {
         let width = img.width;
         let height = img.height;
 
-        // Resize the image proportionally
         if (width > height) {
             if (width > maxWidth) {
                 height = height * maxWidth / width;
@@ -269,75 +271,56 @@ function resizeImage(file, maxWidth, maxHeight, callback) {
         canvas.width = width;
         canvas.height = height;
         ctx.drawImage(img, 0, 0, width, height);
-
-        // Convert canvas to Base64 (JPEG format to reduce size)
-        callback(canvas.toDataURL('image/jpeg'));  // Send image in jpeg format to reduce size
+        callback(canvas.toDataURL('image/jpeg'));
     };
 }
 
 function clearSelectedImage() {
-    selectedImageFile = null; // Reset the selected image file
-    document.getElementById('ImageInput').value = ''; // Clear the input value
-    document.getElementById('imagePreview').style.display = 'none'; // Hide image preview box
-    document.getElementById('imageName').textContent = ''; // Clear the image name display
+    selectedImageFile = null;
+    document.getElementById('ImageInput').value = ''; 
+    document.getElementById('imagePreview').style.display = 'none';
+    document.getElementById('imageName').textContent = ''; 
 }
 
 function openImageMenu() {
-    document.getElementById('ImageInput').click(); // Trigger the file input click
+    document.getElementById('ImageInput').click();
 }
-
 document.getElementById('ImageInput').addEventListener('change', function (event) {
-    selectedImageFile = event.target.files[0]; // Capture the selected file
+    selectedImageFile = event.target.files[0]; 
     if (selectedImageFile) {
         const reader = new FileReader();
         reader.onload = function (e) {
-            document.getElementById('imagePreview').src = e.target.result; // Set image source for preview
-            document.getElementById('imagePreview').style.display = 'block'; // Show image preview
+            document.getElementById('imagePreview').src = e.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
         };
-        reader.readAsDataURL(selectedImageFile); // Read the file as Data URL
-
-        // Display the file name
-        document.getElementById('imageName').textContent = selectedImageFile.name; // Display the file name
+        reader.readAsDataURL(selectedImageFile);
+        document.getElementById('imageName').textContent = selectedImageFile.name; 
     }
 });
 
 function delayReset() {
-    delay = true; // Reset the delay
+    delay = true;
 }
 
 function displayErrorMessages(field, message) {
-    // Select the appropriate error message container based on the field
     const errorContainer = field === 'username' ? document.getElementById('usernameError') : document.getElementById('roomIDError');
-    errorContainer.textContent = message; // Set the error message
+    errorContainer.textContent = message;
 }
 
 function clearErrorMessages() {
-    // Clear existing error messages for both fields
     document.getElementById('usernameError').textContent = '';
     document.getElementById('roomIDError').textContent = '';
 }
 
 function exitChat() {
-    // Hide the chat and message sections
     document.getElementById("Chat").style.display = 'none';
     document.getElementById("MessageSection").style.display = 'none';
-
-    // Clear the chat area
     document.getElementById("Chat").innerHTML = '';
-
-    // Reset the room ID display
     chatRoom.style.display = 'none';
-
-    // Show the access port section again
     document.getElementById("AccessPort").style.display = 'block';
-
-    // Hide the exit button
     document.getElementById("ExitButton").style.display = 'none';
-
-    // Optionally, disconnect the socket from the room
-    socket.emit("leave", chatIDInput.value); // Emit a leave event to the server
+    socket.emit("leave", chatIDInput.value); 
 }
-
 
 function getCurrentTime() {
     const now = new Date();
@@ -345,7 +328,7 @@ function getCurrentTime() {
     let minutes = now.getMinutes();
     let ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
+    hours = hours ? hours : 12;
     minutes = minutes < 10 ? '0' + minutes : minutes;
     return hours + ':' + minutes + ' ' + ampm;
 }
