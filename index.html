@@ -15,12 +15,17 @@
 <body onload="onload()">
     <div id="Main">
         <audio id="Ding" src="Ding.mp3"></audio>
-        <h1 id="Title">Chat</h1>
+        <div id="online-users-counter">
+            Online Users: <span id="online-count">0</span>
+        </div>
+        <h1 id="Title">Echo Msg</h1>
         <div id="AccessPort">
             <label id="NameLabel">Username</label>
             <input id="NameInput" type="text" placeholder="Enter your username" required>
             <div id="usernameError" class="error-message"></div>
-
+            <div id="sameNameError" class="error-message"></div>
+            <div id="blacklistedName" class="error-message"></div>
+            
             <label id="IDLabel">Room ID</label>
             <input 
                 id="IDInput" 
@@ -41,7 +46,7 @@
         </div>
         <div id="Chat" style="display:none;">
         </div>
-        
+
         <div id="MessageSection" style="display:none;">
             <label id="MessageLabel">Message</label>
             <div id="previewContainer">
