@@ -2,6 +2,9 @@ let socket, usernameInput, chatIDInput, messageInput, chatRoom, dingSound;
 let messages = [];
 let delay = true;
 let selectedImageFile = null;
+let typingTimeout = null;
+let isTyping = false;
+const typingUsers = new Set();
 
 function onload() {
     socket = io();
@@ -32,6 +35,7 @@ function setupEventListeners() {
             Send();
         }
     });
+    messageInput.addEventListener('input', handleTyping);
 
     socket.on('updateOnlineUsers', data => {
         const element = document.getElementById('online-count');
@@ -45,6 +49,21 @@ function setupEventListeners() {
         ['Chat', 'MessageSection', 'ExitButton'].forEach(id => {
             document.getElementById(id).style.display = 'block';
         });
+    });
+
+    socket.on('history', history => {
+        messages = history;
+        updateMessages();
+    });
+
+    socket.on('typing', username => {
+        typingUsers.add(username);
+        renderTypingIndicator();
+    });
+
+    socket.on('stopTyping', username => {
+        typingUsers.delete(username);
+        renderTypingIndicator();
     });
 
     socket.on('recieve', message => {
@@ -250,6 +269,11 @@ function Send() {
         socket.emit('send', message);
         resetMessageInput();
     }
+
+    if (isTyping) {
+        socket.emit('stopTyping');
+        isTyping = false;
+    }
 }
 
 function resetMessageInput() {
@@ -309,6 +333,36 @@ function openImageMenu() {
     document.getElementById('ImageInput').click();
 }
 
+function handleTyping() {
+    if (!isTyping && messageInput.value.trim()) {
+        socket.emit('typing');
+        isTyping = true;
+    }
+
+    clearTimeout(typingTimeout);
+    if (messageInput.value.trim()) {
+        typingTimeout = setTimeout(() => {
+            socket.emit('stopTyping');
+            isTyping = false;
+        }, 1000);
+    } else if (isTyping) {
+        socket.emit('stopTyping');
+        isTyping = false;
+    }
+}
+
+function renderTypingIndicator() {
+    const indicator = document.getElementById('typingIndicator');
+    if (typingUsers.size === 0) {
+        indicator.style.display = 'none';
+        indicator.textContent = '';
+        return;
+    }
+
+    indicator.style.display = 'block';
+    indicator.textContent = `${Array.from(typingUsers).join(', ')} is typing...`;
+}
+
 function displayErrorMessages(field, message) {
     document.getElementById(field === 'username' ? 'usernameError' : 'roomIDError').textContent = message;
 }
@@ -338,5 +392,9 @@ function exitChat() {
     document.getElementById("AccessPort").style.display = 'block';
     document.getElementById("ExitButton").style.display = 'none';
 
+    if (isTyping) {
+        socket.emit('stopTyping');
+        isTyping = false;
+    }
     socket.emit("leave", currentRoomID, username);
 }

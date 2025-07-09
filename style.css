@@ -302,3 +302,9 @@ input[type="text"]:focus, input[type="tel"]:focus, input#ComposedMessage:focus {
 #online-users-counter {
   color: #00bf40;
 }
+
+.typing-indicator {
+  color: #cfcfcf;
+  font-style: italic;
+  margin-bottom: 5px;
+}
