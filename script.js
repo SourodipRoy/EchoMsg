@@ -2,6 +2,9 @@ let socket, usernameInput, chatIDInput, messageInput, chatRoom, dingSound;
 let messages = [];
 let delay = true;
 let selectedImageFile = null;
+const selectedMessages = new Set();
+let holdTimeout = null;
+let currentActionMenu = null;
 
 function onload() {
     socket = io();
@@ -48,11 +51,29 @@ function setupEventListeners() {
     });
 
     socket.on('recieve', message => {
+        if (!message.id) message.id = generateID();
+        if (!message.reactions) message.reactions = {};
         messages.push(message);
         if (messages.length > 100) messages.shift();
         dingSound.currentTime = 0;
         dingSound.play();
         updateMessages();
+    });
+
+    socket.on('deleteMessage', data => {
+        removeMessageById(data.id);
+    });
+
+    socket.on('addReaction', data => {
+        const msg = messages.find(m => m.id === data.id);
+        if (msg) {
+            if (!msg.reactions) msg.reactions = {};
+            if (!msg.reactions[data.emoji]) msg.reactions[data.emoji] = [];
+            if (!msg.reactions[data.emoji].includes(data.username)) {
+                msg.reactions[data.emoji].push(data.username);
+            }
+            updateMessages();
+        }
     });
 
     document.getElementById('ImageInput').addEventListener('change', handleImageSelect);
@@ -72,9 +93,19 @@ function createMessageBlock(messageObj, index) {
     const messageBlock = document.createElement('div');
     const isCurrentUser = messageObj.username === usernameInput.value;
 
+    messageBlock.className = 'message-block';
+    messageBlock.dataset.id = messageObj.id;
+    if (selectedMessages.has(messageObj.id)) messageBlock.classList.add('selected');
+
     messageBlock.style.position = 'relative';
     messageBlock.style.width = '65%';
     messageBlock.style.margin = isCurrentUser ? '0 0 4px auto' : '0 auto 4px 0';
+
+    messageBlock.addEventListener('mousedown', e => startHold(e, messageBlock, messageObj));
+    messageBlock.addEventListener('touchstart', e => startHold(e, messageBlock, messageObj));
+    ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(ev => {
+        messageBlock.addEventListener(ev, cancelHold);
+    });
 
     if (index === 0 || messages[index - 1].username !== messageObj.username) {
         const sender = createSenderElement(messageObj.username, isCurrentUser);
@@ -90,6 +121,9 @@ function createMessageBlock(messageObj, index) {
     }
 
     messageBlock.appendChild(createTimeElement(messageObj.time));
+    if (messageObj.reactions && Object.keys(messageObj.reactions).length > 0) {
+        messageBlock.appendChild(createReactionElement(messageObj.reactions));
+    }
     return messageBlock;
 }
 
@@ -233,11 +267,13 @@ function Send() {
     setTimeout(() => delay = true, 1000);
 
     const message = {
+        id: generateID(),
         username: usernameInput.value.trim(),
         image: hasImage ? null : undefined,
         text: hasText ? messageText : undefined,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        type: hasImage && hasText ? 'image+text' : hasImage ? 'image' : 'text'
+        type: hasImage && hasText ? 'image+text' : hasImage ? 'image' : 'text',
+        reactions: {}
     };
 
     if (hasImage) {
@@ -339,4 +375,81 @@ function exitChat() {
     document.getElementById("ExitButton").style.display = 'none';
 
     socket.emit("leave", currentRoomID, username);
+}
+
+function startHold(e, block, messageObj) {
+    e.preventDefault();
+    holdTimeout = setTimeout(() => {
+        toggleSelection(block, messageObj.id);
+        showActionMenu(block, messageObj);
+    }, 500);
+}
+
+function cancelHold() {
+    clearTimeout(holdTimeout);
+}
+
+function toggleSelection(block, id) {
+    if (selectedMessages.has(id)) {
+        selectedMessages.delete(id);
+        block.classList.remove('selected');
+    } else {
+        selectedMessages.add(id);
+        block.classList.add('selected');
+    }
+}
+
+function showActionMenu(block, messageObj) {
+    if (currentActionMenu) currentActionMenu.remove();
+    const menu = document.createElement('div');
+    menu.className = 'action-menu';
+    if (messageObj.username === usernameInput.value.trim()) {
+        const del = document.createElement('button');
+        del.textContent = 'Delete';
+        del.onclick = () => {
+            if (confirm('Delete this message?')) {
+                socket.emit('deleteMessage', { id: messageObj.id });
+                removeMessageById(messageObj.id);
+            }
+            menu.remove();
+        };
+        menu.appendChild(del);
+    }
+    ['👍','❤️','😂','😮','😢'].forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.textContent = emoji;
+        btn.onclick = () => {
+            socket.emit('addReaction', { id: messageObj.id, emoji });
+            menu.remove();
+        };
+        menu.appendChild(btn);
+    });
+    block.appendChild(menu);
+    currentActionMenu = menu;
+}
+
+function removeMessageById(id) {
+    const index = messages.findIndex(m => m.id === id);
+    if (index !== -1) {
+        messages.splice(index, 1);
+        updateMessages();
+    }
+}
+
+function createReactionElement(reactions) {
+    const container = document.createElement('div');
+    container.className = 'reaction-container';
+    Object.entries(reactions).forEach(([emoji, users]) => {
+        if (users.length > 0) {
+            const span = document.createElement('span');
+            span.textContent = `${emoji} ${users.length}`;
+            span.style.marginRight = '4px';
+            container.appendChild(span);
+        }
+    });
+    return container;
+}
+
+function generateID() {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
 }

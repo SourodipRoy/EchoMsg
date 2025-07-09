@@ -151,6 +151,20 @@ io.on('connection', function (socket) {
         });
     });
 
+    socket.on('deleteMessage', function (data) {
+        const room = rooms.get(socket.id);
+        const username = usernames.get(socket.id);
+        if (!room || !username) return;
+        io.in(room).emit('deleteMessage', { id: data.id });
+    });
+
+    socket.on('addReaction', function (data) {
+        const room = rooms.get(socket.id);
+        const username = usernames.get(socket.id);
+        if (!room || !username) return;
+        io.in(room).emit('addReaction', { id: data.id, emoji: data.emoji, username: username });
+    });
+
     socket.on('disconnect', function () {
         const room = rooms.get(socket.id);
         const username = usernames.get(socket.id);
