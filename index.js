@@ -1,5 +1,6 @@
 const http = require("http");
 const express = require("express");
+const compression = require("compression");
 const socketio = require("socket.io");
 const path = require("path");
 
@@ -8,6 +9,7 @@ const httpServer = http.Server(app);
 const io = socketio(httpServer);
 const gameDirectory = path.join(__dirname);
 
+app.use(compression());
 app.use(express.static(gameDirectory));
 
 const PORT = process.env.PORT || 3000;
@@ -44,7 +46,7 @@ io.on('connection', function (socket) {
         }
 
         if (previousRoom) {
-            handleUserLeaving(socket, previousRoom, username);
+            handleUserLeaving(socket, previousRoom);
         }
 
         socket.join(normalizedRoom);
@@ -72,7 +74,8 @@ io.on('connection', function (socket) {
     });
 
 
-    function handleUserLeaving(socket, room, username) {
+    function handleUserLeaving(socket, room) {
+        const username = usernames.get(socket.id);
         if (!room || !username) return;
 
         if (onlineUsers.has(room)) {
@@ -104,9 +107,9 @@ io.on('connection', function (socket) {
         socket.leave(room);
     }
 
-    socket.on("leave", function (room, username) {
+    socket.on("leave", function (room) {
         const normalizedRoom = room?.trim() || GLOBAL_CHAT;
-        handleUserLeaving(socket, normalizedRoom, username);
+        handleUserLeaving(socket, normalizedRoom);
         rooms.delete(socket.id);
         usernames.delete(socket.id);
     });
@@ -153,7 +156,7 @@ io.on('connection', function (socket) {
         const username = usernames.get(socket.id);
         if (!room || !username) return;
 
-        handleUserLeaving(socket, room, username);
+        handleUserLeaving(socket, room);
         rooms.delete(socket.id);
         usernames.delete(socket.id);
     });

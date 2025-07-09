@@ -26,6 +26,13 @@ function setupEventListeners() {
         e.target.value = e.target.value.replace(/[^0-9]/g, '');
     });
 
+    messageInput.addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            Send();
+        }
+    });
+
     socket.on('updateOnlineUsers', data => {
         const element = document.getElementById('online-count');
         if (element) element.textContent = data.count || 0;
@@ -42,6 +49,7 @@ function setupEventListeners() {
 
     socket.on('recieve', message => {
         messages.push(message);
+        if (messages.length > 100) messages.shift();
         dingSound.currentTime = 0;
         dingSound.play();
         updateMessages();
