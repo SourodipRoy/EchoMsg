@@ -18,11 +18,9 @@ httpServer.listen(PORT, () => {
 });
 
 const onlineUsers = new Map();
-const rooms = new Map();
+const rooms = new Map(); 
 const usernames = new Map();
 const GLOBAL_CHAT = 'global';
-const messageHistory = new Map();
-const HISTORY_LIMIT = 100;
 
 io.on('connection', function (socket) {
     socket.on("checkUsername", function (room, username, callback) {
@@ -73,7 +71,6 @@ io.on('connection', function (socket) {
         });
 
         socket.emit("join", normalizedRoom === GLOBAL_CHAT ? '' : normalizedRoom);
-        socket.emit("history", messageHistory.get(normalizedRoom) || []);
     });
 
 
@@ -104,7 +101,6 @@ io.on('connection', function (socket) {
 
             if (onlineUsers.get(room).size === 0) {
                 onlineUsers.delete(room);
-                messageHistory.delete(room);
             }
         }
 
@@ -122,57 +118,37 @@ io.on('connection', function (socket) {
         const room = rooms.get(socket.id);
         const username = usernames.get(socket.id);
         if (!room || !username || !message?.text?.trim()) return;
-        const msg = {
+        io.in(room).emit("recieve", {
             text: message.text,
             username: username,
             time: message.time,
             type: 'text'
-        };
-        io.in(room).emit("recieve", msg);
-        storeMessage(room, msg);
+        });
     });
 
     socket.on("sendImage", function (message) {
         const room = rooms.get(socket.id);
         const username = usernames.get(socket.id);
         if (!room || !username || !message?.image) return;
-        const msg = {
+        io.in(room).emit("recieve", {
             image: message.image,
             username: username,
             time: message.time,
             type: 'image'
-        };
-        io.in(room).emit("recieve", msg);
-        storeMessage(room, msg);
+        });
     });
 
     socket.on("sendImageText", function (message) {
         const room = rooms.get(socket.id);
         const username = usernames.get(socket.id);
         if (!room || !username || (!message?.text && !message?.image)) return;
-        const msg = {
+        io.in(room).emit("recieve", {
             text: message.text,
             image: message.image,
             username: username,
             time: message.time,
             type: 'image+text'
-        };
-        io.in(room).emit("recieve", msg);
-        storeMessage(room, msg);
-    });
-
-    socket.on('typing', function () {
-        const room = rooms.get(socket.id);
-        const username = usernames.get(socket.id);
-        if (!room || !username) return;
-        socket.to(room).emit('typing', username);
-    });
-
-    socket.on('stopTyping', function () {
-        const room = rooms.get(socket.id);
-        const username = usernames.get(socket.id);
-        if (!room || !username) return;
-        socket.to(room).emit('stopTyping', username);
+        });
     });
 
     socket.on('disconnect', function () {
@@ -189,15 +165,4 @@ io.on('connection', function (socket) {
 function getCurrentTime() {
     const now = new Date();
     return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-}
-
-function storeMessage(room, msg) {
-    if (!messageHistory.has(room)) {
-        messageHistory.set(room, []);
-    }
-    const history = messageHistory.get(room);
-    history.push(msg);
-    if (history.length > HISTORY_LIMIT) {
-        history.shift();
-    }
 }
