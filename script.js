@@ -15,7 +15,8 @@ function onload() {
 
 function setInitialDisplay() {
     ['Chat', 'MessageSection', 'ExitButton'].forEach(id => {
-        document.getElementById(id).style.display = 'none';
+        const element = document.getElementById(id);
+        if (element) element.style.display = 'none';
     });
     document.getElementById('imagePreview').style.display = 'none';
     document.getElementById('imageName').textContent = '';
