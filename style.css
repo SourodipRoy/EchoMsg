@@ -5,7 +5,7 @@
 }
 
 body {
-  font-family: 'Arial', sans-serif;
+  font-family: 'Poppins', sans-serif;
   background-color: #121212;
   color: #e0e0e0;
   line-height: 1.6;
@@ -24,6 +24,27 @@ body {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   max-width: 500px;
   width: 100%;
+}
+
+#landing {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+#landing .landing-title {
+  color: #fa3a6c;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+#landing .tagline {
+  color: #cfcfcf;
+  margin-bottom: 30px;
+}
+
+#landing .Button {
+  width: auto;
+  padding: 10px 30px;
 }
 
 h1#Title {
@@ -65,7 +86,7 @@ input[type="text"], input[type="tel"] {
   margin: 5px 0 10px;
 }
 
-input.Button {
+.Button {
   padding: 10px 20px;
   background-color: #fa3a6c;
   color: #e0e0e0;
@@ -78,7 +99,7 @@ input.Button {
   margin-bottom: 10px;
 }
 
-input.Button:hover {
+.Button:hover {
   background-color: #d02858;
 }
 
