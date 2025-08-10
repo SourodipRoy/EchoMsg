@@ -14,21 +14,11 @@ function onload() {
 }
 
 function setInitialDisplay() {
-    ['Chat', 'MessageSection', 'ExitButton', 'AccessPort'].forEach(id => {
-        const element = document.getElementById(id);
-        if (element) element.style.display = 'none';
+    ['Chat', 'MessageSection', 'ExitButton'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
     });
-    const landing = document.getElementById('landing');
-    if (landing) landing.style.display = 'block';
     document.getElementById('imagePreview').style.display = 'none';
     document.getElementById('imageName').textContent = '';
-}
-
-function startChat() {
-    const landing = document.getElementById('landing');
-    const accessPort = document.getElementById('AccessPort');
-    if (landing) landing.style.display = 'none';
-    if (accessPort) accessPort.style.display = 'block';
 }
 
 function setupEventListeners() {
