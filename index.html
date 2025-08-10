@@ -9,17 +9,25 @@
     <meta property="og:url" content="https://echomsg.onrender.com" />
     <title>Echo Msg: Connect and Chat Instantly</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="socket.io/socket.io.js"></script>
     <script src="script.js" defer></script>
 </head>
 <body onload="onload()">
     <div id="Main">
         <audio id="Ding" src="Ding.mp3"></audio>
-        <div id="online-users-counter">
-            Online Users: <span id="online-count">0</span>
-        </div>
-        <h1 id="Title">Echo Msg</h1>
-        <div id="AccessPort">
+
+        <section id="landing">
+            <h1 class="landing-title">Echo Msg</h1>
+            <p class="tagline">Connect and chat instantly with anyone.</p>
+            <input id="StartButton" class="Button" type="button" value="Start Chatting" onclick="startChat()">
+        </section>
+
+        <div id="AccessPort" style="display:none;">
+            <div id="online-users-counter">
+                Online Users: <span id="online-count">0</span>
+            </div>
+            <h1 id="Title">Echo Msg</h1>
             <label id="NameLabel">Username</label>
             <input id="NameInput" type="text" placeholder="Enter your username" required>
             <div id="usernameError" class="error-message"></div>
